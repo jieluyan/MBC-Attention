@@ -12,7 +12,7 @@ def predictSequenceFromSaveKerasMdl(test_path, mdl_path, testRs_path, ft_list=de
     pred = CNNMdl.predict(X)
     pred = pred / def_scale - def_bias
     fastas["Prediction"] = 10 ** (-pred)
-    fastas.to_csv(testRs_path, header=False)
+    fastas.to_csv(testRs_path, index=False)
     print("save %s prediction to: %s" % (test_path, testRs_path))
     return pred
 
