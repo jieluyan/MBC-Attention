@@ -13,7 +13,16 @@ host_specie = "escherichia coli"
 target_species = ["staphylococcus aureus", "enterococcus faecium", "streptococcus pneumoniae", "bacillus subtilis"]
 vip_species = ["escherichia coli", "staphylococcus aureus"]
 unnatural_amino_acids = ["B", "J", "O", "U", "Z", "X"]
-largest_MIC = 10000; def_bias = 3.8; def_scale = 1/6; # largest_MIC = 10000;  EC pMIC range: -3.7781512503836434 ~ 2.1630917510364918
+largest_MIC = 10000; def_bias = 3.8; def_scale = 1/6;
+def_lrParas = {"lr": 5e-4 ,"decay_rate": 0.92, "decay_steps": 25, "patience": 15, "monitor": "loss"}
+def_hyperParaDict = {"layer_num": 1, "dropOutRate": 0.4, "filter_num": 32, "epoch": 200}
+def_fts = \
+['type8raac9glmd3lambda-correlation', 'type8raac7glmd3lambda-correlation', 'QSOrder_lmd4', 'QSOrder_lmd3', 'QSOrder_lmd2',
+ 'QSOrder_lmd1', 'QSOrder_lmd0', 'type5raac15glmd4lambda-correlation', 'type7raac10glmd3lambda-correlation',
+ 'type5raac8glmd2lambda-correlation', 'type3Braac9glmd3lambda-correlation', 'type2raac15glmd4lambda-correlation',
+ 'type2raac8glmd2lambda-correlation', 'type8raac14glmd1lambda-correlation']
+
+# largest_MIC = 10000;  EC pMIC range: -3.7781512503836434 ~ 2.1630917510364918
 # largest_MIC = 10; def_bias = 1; def_scale = 1/3.2; #  EC pMIC range: -0.9997855462266436 ~ 2.1630917510364918
 
 def getOriSepcieLocation(specie_name):
