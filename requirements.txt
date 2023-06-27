@@ -1,0 +1,33 @@
+# check CUDA VERSION for installing tensorflow
+nvidia-smi
+# my cuda is 11.8 so I will show the 11.8 as an installation example
+
+# create a new environment of conda
+conda create -n your_env_name python=3.9
+# activate your environment "your_env_name", I use "mbc_att", so the following will be use this name as an example
+conda activate mbc_att
+# install tensorflow with your cuda version (mine is 11.8)
+# search google with keywords:"tensorflow install with cuda 11.8" https://www.tensorflow.org/install/pip
+conda install -c conda-forge cudatoolkit=11.8.0
+python3 -m pip install nvidia-cudnn-cu11==8.6.0.163 tensorflow==2.12.*
+mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+echo 'CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+source $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+# Verify install:
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+
+# install pycaret
+pip install pycaret
+
+# install cd-hit
+conda install -c bioconda cd-hit
+
+# install biopython glob dill
+pip3 install biopython glob2 dill
+
+# install pytorch
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+
+# AttributeError: partially initialized module 'charset_normalizer' has no attribute 'md__mypyc' (most likely due to a circular import)
+pip install --force-reinstall charset-normalizer==3.1.0

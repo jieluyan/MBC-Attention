@@ -1,0 +1,97 @@
+import os
+import pandas as pd
+from tools.preProcessed import *
+from tools.features import *
+from sklearn.impute import SimpleImputer
+
+# log_path=os.path.join(GetFolder().log_dir, "train.log")
+def geneTestFtNames(log_name="train.log", from_start=False, test_flag=False):
+    all_ft_names = geneAllFeatureNames(low=1, high=19)
+    if test_flag:
+        all_ft_names = ['AAC', "DPC", "DDE", 'type1raac2glmd2g-gap']
+    log_path = os.path.join(GetFolder().log_dir, log_name)
+    log_existed = os.path.isfile(log_path)
+    colnames = ["ft_name", "mdl_path", "train_info_path"]
+    if log_existed and not from_start:
+        ft_hdl_infos = pd.read_csv(log_path)
+        ft_names = ft_hdl_infos["ft_name"]
+        ft_names = ft_names.unique()
+        for ft in ft_names:
+            all_ft_names.remove(ft)
+    return all_ft_names
+
+class geneMergeFts():
+    def __init__(self, ft_name, target, host_specie="escherichia coli", target_specie="staphylococcus aureus", onlyMrg=False,
+                 cdhit=False, x=20, test_rep=False, process="merge"):
+        g = GetMergeInfo(host_specie=host_specie, target_specie=target_specie, onlyMrg=onlyMrg,
+                 cdhit=cdhit, x=x)
+        if process == "merge":
+            self.tra_X, self.tra_Y = geneXY(g.tra_train_fastas, ft_name, target)
+            self.val_X, self.val_Y = geneXY(g.val_train_fastas, ft_name, target)
+            self.train_X, self.train_Y = geneXY(g.train_fastas, ft_name, target)
+            self.all_test_X, self.all_test_Y = geneXY(g.all_test_fastas, ft_name, target)
+            self.test_X, self.test_Y = geneXY(g.test_fastas, ft_name, target)
+            self.novel_X, self.novel_Y = geneXY(g.novel_fastas, ft_name, target)
+        if process == "host" and not onlyMrg:
+            if test_rep:
+                self.mrg_X, self.mrg_Y = geneXY(g.mrg_fastas, ft_name, target)
+                self.all_del_mrg_X, self.all_del_mrg_Y = geneXY(g.hst_del_mrg_fastas, ft_name, target)
+            else:
+                self.train_X, self.train_Y = geneXY(g.hst_train_fastas, ft_name, target)
+                self.test_X, self.test_Y = geneXY(g.test_fastas, ft_name, target)
+            if cdhit:
+                self.tra_X, self.tra_Y = geneXY(g.tra_hst_train_fastas, ft_name, target)
+                self.val_X, self.val_Y = geneXY(g.val_hst_train_fastas, ft_name, target)
+                self.all_test_X, self.all_test_Y = geneXY(g.all_test_fastas, ft_name, target)
+                self.novel_X, self.novel_Y = geneXY(g.novel_fastas, ft_name, target)
+        if process == "target" and not onlyMrg:
+            if test_rep:
+                self.mrg_X, self.mrg_Y = geneXY(g.mrg_fastas, ft_name, target)
+                self.all_del_mrg_X, self.all_del_mrg_Y = geneXY(g.tgt_del_mrg_fastas, ft_name, target)
+            else:
+                self.train_X, self.train_Y = geneXY(g.tgt_train_fastas, ft_name, target)
+                self.test_X, self.test_Y = geneXY(g.test_fastas, ft_name, target)
+            if cdhit:
+                self.tra_X, self.tra_Y = geneXY(g.tra_tgt_train_fastas, ft_name, target)
+                self.val_X, self.val_Y = geneXY(g.val_tgt_train_fastas, ft_name, target)
+                self.all_test_X, self.all_test_Y = geneXY(g.all_test_fastas, ft_name, target)
+                self.novel_X, self.novel_Y = geneXY(g.novel_fastas, ft_name, target)
+
+class geneSingleFts():
+    def __init__(self, ft_name, target, specie="escherichia coli", del_novel=False, cdhit_flag=False):
+        spe = GetSpecieInfo(specie_name=specie, del_novel=del_novel, cdhit_flag=cdhit_flag)
+        self.tra_X, self.tra_Y = geneXY(spe.tra_train_fastas, ft_name, target)
+        self.val_X, self.val_Y = geneXY(spe.val_train_fastas, ft_name, target)
+        self.train_X, self.train_Y = geneXY(spe.train_fastas, ft_name, target)
+        self.test_X, self.test_Y = geneXY(spe.test_fastas, ft_name, target)
+
+class geneECFts():
+    def __init__(self, ft_name, target, specie="escherichia coli", del_novel=False, cdhit_flag=False, rep=0):
+        spe = GetSpecieInfo(specie_name=specie, del_novel=del_novel, cdhit_flag=cdhit_flag, rep=rep)
+        self.tra_X, self.tra_Y = geneXY(spe.tra_train_fastas, ft_name, target)
+        self.val_X, self.val_Y = geneXY(spe.val_train_fastas, ft_name, target)
+        self.train_X, self.train_Y = geneXY(spe.train_fastas, ft_name, target)
+        self.test_X, self.test_Y = geneXY(spe.test_fastas, ft_name, target)
+
+if __name__ == "__main__":
+    # d1 = develop1MergeMdl()
+    # mic_ratio_d1, metrics_d1 = d1.test(d1.mdl_path)
+    # d2 = develop2SingleMdls()
+    # host_specie = "escherichia coli"; target_specie = "staphylococcus aureus"
+    # mic_ratio_d2, metrics_d2 = d2.test(d2.mdl_paths[host_specie], d2.mdl_paths[target_specie])
+    # gene feature:
+    # ft = geneFeature(fastas, ft_whole_name="type8raac18")
+    # fastas with n samples are lists like: [[ID0, Seq0], [ID1, Seq1], ..., [IDn, Seqn]]
+    # fastas can be generated by:
+    # specie name can be one of ["escherichia coli", "staphylococcus aureus"]
+    specie_info = GetSpecieInfo("escherichia coli")
+    fastas = specie_info.fastas
+    # or for merge model:
+    merge_info = GetMergeInfo()
+    # merge_info.test_fastas, merge_info.train_fastas
+    # all the feature names we can use:
+    all_ft_list = geneAllFeatureNames()
+    for ft in all_ft_list:
+        rs = geneFeature(fastas, ft)
+
+    # AAC, TPC, ... if it is PseKraac use typeXraacY
