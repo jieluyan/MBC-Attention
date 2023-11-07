@@ -227,7 +227,7 @@ def cnnBranchTest(in_shape, attention_local=True):
     mdl = models.Sequential()
     cnn = keras.Sequential([
     layers.BatchNormalization(input_shape=in_shape),
-    layers.Conv2D(50, (3, 3), activation='relu', padding="same"),
+    layers.Conv2D(32, (3, 3), activation='relu', padding="same"),
     ])
     pool = keras.Sequential([
         layers.MaxPooling2D((2, 2), padding="same"),
@@ -237,9 +237,9 @@ def cnnBranchTest(in_shape, attention_local=True):
     out = mdl.output
     shape = mdl.output_shape
     if attention_local:
-        key = layers.Conv2D(50, (1, 1), padding="same")(out)
-        query = layers.Conv2D(50, (1, 1), padding="same")(out)
-        value = layers.Conv2D(50, (1, 1), padding="same")(out)
+        key = layers.Conv2D(32, (1, 1), padding="same")(out)
+        query = layers.Conv2D(32, (1, 1), padding="same")(out)
+        value = layers.Conv2D(32, (1, 1), padding="same")(out)
         key = layers.Reshape((shape[1]*shape[2], shape[3]))(key)
         query = layers.Reshape((shape[1]*shape[2], shape[3]))(query)
         value = layers.Reshape((shape[1]*shape[2], shape[3]))(value)
